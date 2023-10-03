@@ -1,182 +1,382 @@
 <template>
-  <div class="">
-    <div class="w-full p-3 flex border-b md:px-20 lg:px-52 bg-white bg-opacity-50">
-      <button @click="openWebPage('https://vercel.com/')" type="button" name="button">
-        <img src="../assets/vercel.png" class="h-11" alt="">
-      </button>
+  <div class="checkbox-container">
+    <label v-for="(option, index) in checkboxOptions" :key="index">
+      <input class= "ml-6" type="checkbox" v-model="checkedOptions[index]" /> {{ option }}
+    </label>
+      <select
+      class="
+        ml-6
+        bg-gray-50
+        border border-gray-300
+        text-gray-900 text-sm
+        rounded-lg
+        focus:ring-blue-500 focus:border-blue-500
+      "
+      v-model="selectedItem"
+      @change="fetchPresignedUrl"
+    >
+      <option v-for="item in items" :key="item.value" :value="item.value">
+        {{ item.text }}
+      </option>
+    </select>
+    <input type="checkbox" v-model="switchValue">
+  </div>
+  <div class="videos-wrapper" v-if="selectedItem !== 'c'">
+    <div
+      class="video-container"
+      @click="addPoint"
+      @dblclick="handleDoubleClick"
+    >
+      <video
+        ref="videoElement"
+        :key="videoOriginal"
+        v-if="videoOriginal !== ''"
+        margin="20"
+        width="640"
+        height="360"
+        controls
+      >
+        <source :src="videoOriginal" type="video/mp4" />
+        Tu navegador no soporta el elemento de video.
+      </video>
+      <svg v-if="points.length" :width="videoWidth" :height="videoHeight">
+        <polygon
+          :points="polygonPoints"
+          :fill="polygonColor"
+          stroke="red"
+          stroke-width="2"
+        />
+      </svg>
     </div>
-    <div class="text-3xl uppercase font-extrabold p-12 text-center">
-      Deploying a <span class="gradient-text blue">Vue,</span> <span class="gradient-text green">Vite,</span> and <span class="gradient-text purple">Tailwind</span> project to <span class="gradient-text orange">Vercel</span>
-    </div>
-    <div class="md:flex md:px-20 lg:px-52">
-      <div class="md:w-1/2 p-4">
-        <div class="bg-white p-6 shadow-xl rounded h-full">
-          <p class="font-semibold text-2xl pb-4">Guide</p>
-          <div class="p-4 rounded border overflow-auto h-80" style="background-color: #fafafa;">
-            <BlogPost />
-          </div>
-          <button @click="openWebPage('https://vercel.com/blog/integrations-marketplace')" type="button" name="button" class="flex items-center pt-4 text-gray-500 hover:text-blue-500">
-            <p class="text-sm mr-2">View Full Blog</p>
-            <i class="fas fa-arrow-right text-xs"></i>
-          </button>
-        </div>
-      </div>
-      <!-- <div class="md:w-1/2 p-4">
-        <div class="p-6 border rounded overflow-hidden h-full" style="background-color: #fafafa;">
-          <p class="font-semibold text-2xl pb-4">Learn More</p>
-          <div class="flex flex-wrap">
-            <div v-for="item in cards" :key="item.name" class="md:w-1/2">
-              <div class="px-2 py-4">
-                <Card :name="item.name" :src="item.src" :logo="item.logo" :link="item.link"/>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div> -->
-      <div class="md:w-1/2 p-4">
-        <div class="p-6 border rounded overflow-hidden h-full" style="background-color: #fafafa;">
-          <p class="font-semibold text-2xl pb-4">Learn More</p>
-          <div class="flex flex-wrap">
-            <div class="md:w-1/2">
-              <div class="px-2 py-4">
-                <div @click="openWebPage('https://vuejs.org/')" class="w-full h-full bg-white rounded-md shadow-md hover:shadow-lg">
-                  <div class="relative w-full">
-                    <img class="rounded-md" src="../assets/vueHome.png" alt="">
-                  </div>
-                  <div class="bg-white p-3 flex items-center">
-                    <img src="../assets/logo.png" alt="" class="h-5 mr-2">
-                    <p class="text-sm font-semibold text-gray-500 truncate"> Vue.js </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="md:w-1/2">
-              <div class="px-2 py-4">
-                <div @click="openWebPage('https://tailwindcss.com/')" class="w-full h-full bg-white rounded-md shadow-md hover:shadow-lg">
-                  <div class="relative w-full">
-                    <img class="rounded-md" src="../assets/tailwindHome.png" alt="">
-                  </div>
-                  <div class="bg-white p-3 flex items-center">
-                    <img src="../assets/tailwindcss.svg" alt="" class="h-5 mr-2">
-                    <p class="text-sm font-semibold text-gray-500 truncate"> Tailwind CSS </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="md:w-1/2">
-              <div class="px-2 py-4">
-                <div @click="openWebPage('https://vercel.com/')" class="w-full h-full bg-white rounded-md shadow-md hover:shadow-lg">
-                  <div class="relative w-full">
-                    <img class="rounded-md" src="../assets/vercelHome.png" alt="">
-                  </div>
-                  <div class="bg-white p-3 flex items-center">
-                    <img src="../assets/vercelSmall.svg" alt="" class="h-5 mr-2">
-                    <p class="text-sm font-semibold text-gray-500 truncate"> Vercel </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="md:w-1/2">
-              <div class="px-2 py-4">
-                <div @click="openWebPage('https://vitejs.dev/')" class="w-full h-full bg-white rounded-md shadow-md hover:shadow-lg">
-                  <div class="relative w-full">
-                    <img class="rounded-md" src="../assets/viteHome.png" alt="">
-                  </div>
-                  <div class="bg-white p-3 flex items-center">
-                    <img src="../assets/viteLogo.svg" alt="" class="h-5 mr-2">
-                    <p class="text-sm font-semibold text-gray-500 truncate"> Vite </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+    <div class="video-container">
+      <video
+        :key="videoSource"
+        ref="videoElement"
+        v-if="videoSource !== ''"
+        width="640"
+        height="360"
+        controls
+      >
+        <source :src="videoSource" type="video/mp4" />
+        Tu navegador no soporta la reproducción de videos en HTML5.
+      </video>
     </div>
   </div>
+  <div class="coordinates-box">
+    <p v-if="points.length > 0">Coordenadas: {{ polygonPoints }}</p>
+    <p></p>
+  </div>
+  <button class="mt-6 mb-6" @click="sendCoordinates">Enviar polígono</button>
+  <div class="bar-chart mx-auto w-48" v-if="videoSource !== ''">
+    <div
+      v-for="(value, label) in barChartData"
+      :key="label"
+      class="bar flex items-center justify-between mb-2"
+    >
+      {{ label }}:
+      <div
+        :style="{ width: value + '%' }"
+        class="filled h-5 bg-blue-500 transition-width duration-300 min-w-2.5"
+      ></div>
+    </div>
+  </div>
+  <div class="videos-wrapper" v-if="selectedItem == 'c'">
+  <div>
+    <img :src="imageURL + '?' + timestamp" alt="Cámara en vivo" width="640">
+    <!-- <img :src="imageURL"> -->
+    <button v-if="imageResult == ''" class="mt-6 mb-6" @click="updateImage">segmentar imagen</button>
+    <button v-if="intervalId !== null" class="mt-6 mb-6" @click="stopImageUpdate">Parar streaming</button>
+  </div>
+  <div v-if="imageResult !== ''">
+    <img v-if="selectedItem == 'c'"  :src="imageResult" alt="Resultado de cámara" width="640">
+  </div>
+</div>
+<div v-if="selectedItem == 'c'">
+  <textarea v-model="question"></textarea>
+  <button @click="queryImage">Send</button>
+  <p v-if="viltResponse">{{ viltResponse }}</p>
+</div>
 </template>
 
 <script>
-import BlogPost from './BlogPost.vue';
-import Card from './Card.vue';
-const cards = [
-  {
-    src: 'public/vueHome.png',
-    logo: 'public/logo.png',
-    name: 'Vue.js',
-    link: 'https://vuejs.org/'
-  },
-  {
-    src: 'public/tailwindHome.png',
-    logo: 'public/tailwindcss.svg',
-    name: 'Tailwind CSS',
-    link: 'https://tailwindcss.com/'
-  },
-  {
-    src: 'public/vercelHome.png',
-    logo: 'public/vercelSmall.svg',
-    name: 'Vercel',
-    link: 'https://vercel.com/'
-  },
-  {
-    src: 'public/viteHome.png',
-    logo: 'public/viteLogo.svg',
-    name: 'Vite',
-    link: 'https://vitejs.dev/'
-  },
-]
-
+import { Chart } from 'chart.js';
 export default {
-  components: {
-    BlogPost,
-    Card
-  },
-  setup() {
+  data() {
     return {
-      cards
-    }
+      checkboxOptions: ['Manzana', 'Persona', 'Auto', 'Camioneta', 'Moto', 'Botella'],
+      checkedOptions: [],
+      points: [],
+      videoOriginal: '',
+      imageURL: '',
+      imageResult:'',
+      timestamp: Date.now(),
+      switchValue: false,
+      videoSource: '',
+      selectedItem: null,
+      inputpresigned: null,
+      viltResponse: '',
+      question: '',
+      intervalId: null,
+      videoWidth: 640,
+      videoHeight: 360,
+      polygonColor: 'rgba(255, 0, 0, 0.5)',
+      items: [
+        { text: 'Línea', value: 'manzanas' },
+        { text: 'Pasillos', value: 'people_alm' },
+        { text: 'Tráfico', value: 'trafico' },
+        { text: 'Reciclaje', value: 'pet'},
+        { text: 'Camara', value: 'c'}
+      ],
+      selectedItem: '',
+      barChartData: {
+        Persona: 50,
+        Caja: 75,
+        Casco: 25,
+        Chaleco: 90,
+      },
+    };
+  },
+  computed: {
+    polygonPoints() {
+      return this.points.map((p) => p.join(',')).join(' ');
+    },
   },
   methods: {
-    openWebPage(url) {
-      window.open(url, "_blank");
+    addPoint(event) {
+      const rect = this.$refs.videoElement.getBoundingClientRect();
+      const x = event.clientX - rect.left;
+      const y = event.clientY - rect.top;
+
+      const roundedX = Math.round(x);
+      const roundedY = Math.round(y);
+
+      this.points.push([roundedX, roundedY]);
+    },
+    stopImageUpdate() {
+    if (this.intervalId) {
+      clearInterval(this.intervalId);
+      this.intervalId = null;
     }
   },
-}
+    updateImage() {
+        this.timestamp = Date.now();  // Cambiar el timestamp fuerza a la imagen a recargarse
+        let apiUrl = 'https://53e4-34-236-18-197.ngrok-free.app/segment'
+        if (this.switchValue) {
+            this.imageURL = 'http://47.181.86.62:8082/jpg/image.jpg'; // Cambiar por la nueva URL deseada
+            //this.imageURL = 'http://47.181.86.62:8082/jpg/image.jpg'; // Cambiar por la nueva URL deseada
+            apiUrl = 'https://53e4-34-236-18-197.ngrok-free.app/hpe'
+            console.log(this.imageURL, apiUrl)
+        } else {
+            this.imageURL = 'http://67.43.220.114/jpg/image.jpg'; // Colocar la URL original o una diferente si deseas
+            apiUrl = 'https://53e4-34-236-18-197.ngrok-free.app/segment'
+        }
+
+        this.intervalId = setInterval(() => {
+
+        fetch(apiUrl, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json',},})
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error('Error al enviar los datos a la API');
+          }
+          return response.json();
+        })
+        .then((data) => {
+          if (data && data.url) {
+            this.imageResult = data.url; // Update the videoOriginal property with the new URL
+            console.log('URL de imagen asignada:', this.imageResult);
+          } else {
+            console.error('La respuesta de la API no contiene una URL válida.');
+          }
+        })
+        .catch((error) => {
+          console.error('Error al enviar las coordenadas:', error);
+        });
+      }, 2000);
+    },
+    fetchPresignedUrl() {
+      const apiUrl = `https://53e4-34-236-18-197.ngrok-free.app/sign?object_name=${encodeURIComponent(this.selectedItem)}`;
+      if (this.selectedItem !== 'c'){
+      fetch(apiUrl, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json',},})
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error('Error al enviar los datos a la API');
+          }
+          return response.json();
+        })
+        .then((data) => {
+          if (data && data.url) {
+            this.videoOriginal = data.url; // Update the videoOriginal property with the new URL
+            console.log('URL del video asignada:', this.videoOriginal);
+          } else {
+            console.error('La respuesta de la API no contiene una URL válida.');
+          }
+        })
+        .catch((error) => {
+          console.error('Error al enviar las coordenadas:', error);
+        });}
+        else{
+          console.log('camerachoose')
+          this.imageURL = 'http://67.43.220.114/jpg/image.jpg'
+        }
+        
+    },
+    queryImage() {
+      const apiUrl = `https://53e4-34-236-18-197.ngrok-free.app/vilt?question=${encodeURIComponent(this.question)}`;
+      console.log(apiUrl)
+      fetch(apiUrl, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json',},})
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error('Error al enviar los datos a la API');
+          }
+          return response.json();
+        })
+        .then((data) => {
+          if (data && data.response) {
+            this.viltResponse = data.response; // Update the videoOriginal property with the new URL
+            console.log('response', this.viltResponse);
+          } else {
+            console.error('La respuesta de la API no contiene una URL válida.');
+          }
+        })
+        .catch((error) => {
+          console.error('Error al enviar las coordenadas:', error);
+        });
+    },
+
+    handleDoubleClick() {
+      this.points = [];
+    },
+    drawChart() {
+      // Aquí simplemente generamos nuevos datos de manera aleatoria para la demostración.
+      // En un contexto real, podrías obtener estos datos de la API o de algún cálculo.
+
+      for (const label in this.barChartData) {
+        this.barChartData[label] = Math.floor(Math.random() * 100);
+      }
+    },
+
+    updateBarChartData(newData) {
+      this.barChartData = newData;
+    },
+    sendCoordinates() {
+      const polygonData = this.points.map((p) => [p[0], p[1]]);
+      const selectedClasses = this.checkboxOptions.filter(
+        (_, index) => this.checkedOptions[index]
+      );
+      const videoProcess = this.selectedItem
+
+      const requestData = {
+        polygon: polygonData,
+        classes: selectedClasses,
+        source: videoProcess,
+      };
+
+      const apiUrl = 'https://53e4-34-236-18-197.ngrok-free.app/count';
+
+      if (this.points.length > 0) {
+        const pointsData = {
+          points: this.points,
+        };
+
+        fetch(apiUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(requestData),
+        })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error('Error al enviar los datos a la API');
+            }
+            return response.json();
+          })
+          .then((data) => {
+            if (data && data.url) {
+              this.videoSource = data.url;
+              this.barChartData = data.elements
+              console.log('URL del video asignada:', this.videoSource);
+            } else {
+              console.error(
+                'La respuesta de la API no contiene una URL válida.'
+              );
+            }
+          })
+          .catch((error) => {
+            console.error('Error al enviar las coordenadas:', error);
+          });
+      }
+    },
+  },
+};
 </script>
 
-<style media="screen">
-.gradient-text {
-
-/* Set the background size and repeat properties. */
-background-size: 100%;
-background-repeat: repeat;
-
-/* Use the text as a mask for the background. */
-/* This will show the gradient as a text color rather than element bg. */
--webkit-background-clip: text;
--webkit-text-fill-color: transparent;
--moz-background-clip: text;
--moz-text-fill-color: transparent;
+<style scoped>
+.bar-chart {
+  display: flex;
+  flex-direction: column;
+  width: 200px;
+  margin: 0 auto;
 }
 
-.blue {
-  /* Create the gradient. */
-  background-image: linear-gradient(90deg, #3c80e7, #5ad4d8);
+.transition-width {
+  transition-property: width;
 }
 
-.green {
-  /* Create the gradient. */
-  background-image: linear-gradient(90deg, #58e061, #ffea4d);
+.filled {
+  background-color: #03142c;
+  height: 20px;
+  transition: width 0.3s;
 }
 
-.purple {
-  /* Create the gradient. */
-  background-image: linear-gradient(90deg, #762ebf, #dd3787);
+.videos-wrapper {
+  display: flex;
+  justify-content: space-between;
 }
 
-.orange {
-  /* Create the gradient. */
-  background-image: linear-gradient(90deg, #ec6654, #f1bb50);
+.video-container {
+  position: relative;
+  /* width: 640px;
+  height: 360px; */
+  /* margin-top: 20px; */
+  border-radius: 10px;
+  overflow: hidden;
 }
 
+.checkbox-container {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.select-container {
+  margin-left: 10px;
+}
+.coordinates-box {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  background-color: rgba(255, 255, 255, 0.8);
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  pointer-events: none; /* Evita que el cuadro de texto capture clics */
+}
+
+video {
+  display: block;
+  width: 640px;
+  height: 360px;
+}
+
+svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
 </style>
