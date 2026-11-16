@@ -11,8 +11,8 @@
   "devDependencies": {
     "@vue/compiler-sfc": "^3.0.4",
     "autoprefixer": "^10.2.6",
-    "postcss": "^8.3.5",
-    "tailwindcss": "^2.2.4",
-    "vite": "^1.0.0-rc.13"
+    "postcss": "^8.5.33",
+    "tailwindcss": "^4.3.5",
+    "vite": "^8.3.8"
   }
 }
